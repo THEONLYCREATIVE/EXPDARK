@@ -1,6 +1,3 @@
-Here's a complete single-file HTML app that embeds the ledger logic — local cache, Firestore sync, undo/redo, and debounced writes:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -457,21 +454,3 @@ document.addEventListener('keydown', (e) => {
 </script>
 </body>
 </html>
-```
-
-What it does
-
-· Works fully offline immediately. Without Firebase config it runs local-only against localStorage.
-· Add Firebase config (replace the YOUR_* placeholders) and it switches to Firestore with persistent multi-tab cache and realtime onSnapshot updates.
-· Undo/redo with Ctrl/Cmd+Z and Ctrl/Cmd+Shift+Z / Ctrl/Cmd+Y, capped at 100 steps.
-· Debounced writes (400 ms) so rapid edits collapse into one Firestore write.
-· Totals row computes gross, commission (%), and net.
-
-Things to know before using
-
-1. Open via a server, not file://. ES modules from gstatic.com require http(s). Run python3 -m http.server or similar.
-2. Firestore security rules must permit reads/writes for this demo path (ledgers/anonymous_user) — this is not production-safe as-is.
-3. The echo-skip check (data.updatedAt === lastSent.updatedAt) is unreliable as discussed — serverTimestamp() resolves server-side so the local value won't match. It's harmless here (an extra re-render), but if you see flicker, replace with a client writeId field.
-4. Deleting a sale re-pushes a whole array — fine for a personal ledger, but under heavy multi-device use, last-write-wins can drop concurrent edits.
-
-If you want, tell me the shape you actually want for products/salesByDate (per-day arrays vs. flat list, product catalog vs. free-text), and I'll reshape the data model and rendering to match.
